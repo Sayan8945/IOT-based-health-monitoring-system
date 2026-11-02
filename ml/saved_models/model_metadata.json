@@ -1,0 +1,18 @@
+{
+  "model_type": "IsolationForest",
+  "n_estimators": 50,
+  "contamination": 0.03,
+  "features": [
+    "mean_hr",
+    "std_hr",
+    "mean_spo2",
+    "mean_temp",
+    "delta_temp",
+    "rms_ecg"
+  ],
+  "trained_samples": 7970,
+  "trained_at": "2026-11-02T18:03:17.189792+00:00",
+  "score_min": -0.6658277665925036,
+  "score_max": -0.38549769092538033,
+  "threshold": 0.65
+}
