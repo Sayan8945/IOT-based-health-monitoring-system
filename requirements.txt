@@ -3,6 +3,9 @@ fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 pydantic>=2.8.0
 
+# Database (MongoDB Atlas via PyMongo Async + DNS SRV)
+pymongo[srv]>=4.9.0
+
 # Scientific Computing & Machine Learning
 numpy>=1.26.0,<2.1.0
 pandas>=2.2.0
