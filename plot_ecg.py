@@ -49,9 +49,31 @@ def load_ecg_data(file_path: Path | str) -> tuple[np.ndarray, np.ndarray | None]
     # Check common column names
     col_names_lower = [str(c).strip().lower() for c in df.columns]
     for idx, name in enumerate(col_names_lower):
-        if name in ["ecg", "ecg_lead_1", "lead1", "voltage", "mv", "val", "signal", "reading"]:
-            ecg_col = df.columns[idx]
-        elif name in ["time", "timestamp", "sec", "seconds", "t"]:
+        if name in [
+            "amplitude",
+            "voltage_mv",
+            "ecg",
+            "ecg_lead_1",
+            "lead1",
+            "voltage",
+            "mv",
+            "val",
+            "signal",
+            "reading",
+        ]:
+            if ecg_col is None or (name == "amplitude" and ecg_col != "amplitude"):
+                ecg_col = df.columns[idx]
+        elif name in [
+            "milliseconds",
+            "millis",
+            "ms",
+            "time_ms",
+            "time",
+            "timestamp",
+            "sec",
+            "seconds",
+            "t",
+        ]:
             time_col = df.columns[idx]
 
     # If not found by name, pick the first numeric column for ECG
@@ -69,7 +91,12 @@ def load_ecg_data(file_path: Path | str) -> tuple[np.ndarray, np.ndarray | None]
     time_arr = None
     if time_col is not None:
         try:
-            time_arr = df[time_col].dropna().values.astype(np.float64)
+            raw_time = df[time_col].dropna().values.astype(np.float64)
+            # If time is in milliseconds, convert to seconds
+            if "ms" in time_col.lower() or "milli" in time_col.lower() or (len(raw_time) > 1 and raw_time[1] >= 1.0):
+                time_arr = raw_time / 1000.0
+            else:
+                time_arr = raw_time
             time_arr = time_arr[: len(ecg_signal)]
         except Exception:
             time_arr = None
