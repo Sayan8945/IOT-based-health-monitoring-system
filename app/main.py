@@ -63,6 +63,7 @@ app.include_router(devices_router)
 
 
 @app.get("/", tags=["Health Check"])
+@app.get("/api/health", tags=["Health Check"])
 async def root():
     """Server status health check."""
     db_connected = get_db_manager().is_connected

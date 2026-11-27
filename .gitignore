@@ -20,6 +20,11 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Generated plots and outputs
+*.png
+*.jpg
+ecg_plot.png
+
 # IDE
 .vscode/
 .idea/
