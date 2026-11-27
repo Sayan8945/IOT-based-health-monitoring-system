@@ -195,6 +195,58 @@ def plot_ecg(
     return save_path
 
 
+def export_to_excel(
+    csv_path: str | Path,
+    output_excel: str | Path = "ecg_waveform.xlsx",
+    fs: int = 100,
+    max_samples: int = 600,
+) -> Path:
+    """Export ECG data to an Excel (.xlsx) workbook with a native interactive line chart embedded."""
+    try:
+        import openpyxl
+        from openpyxl.chart import LineChart, Reference
+    except ImportError:
+        print("[!] openpyxl is required for Excel export. Install via: pip install openpyxl")
+        return Path(output_excel)
+
+    signal, custom_time = load_ecg_data(csv_path)
+    n = min(len(signal), max_samples)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "ECG_Data"
+
+    # Header
+    ws.append(["Time (seconds)", "ECG Amplitude (mV)"])
+
+    # Rows
+    for i in range(n):
+        t = round(custom_time[i], 3) if custom_time is not None and i < len(custom_time) else round(i / float(fs), 3)
+        ws.append([t, float(signal[i])])
+
+    # Build Native Excel Line Chart
+    chart = LineChart()
+    chart.title = f"ECG Waveform — {Path(csv_path).name}"
+    chart.style = 13
+    chart.y_axis.title = "Amplitude (mV / ADC)"
+    chart.x_axis.title = "Time (seconds)"
+    chart.width = 24
+    chart.height = 12
+
+    data_ref = Reference(ws, min_col=2, min_row=1, max_row=n + 1)
+    cats_ref = Reference(ws, min_col=1, min_row=2, max_row=n + 1)
+    chart.add_data(data_ref, titles_from_data=True)
+    chart.set_categories(cats_ref)
+
+    # Place chart next to the tabular data
+    ws.add_chart(chart, "D2")
+
+    out_path = Path(output_excel)
+    wb.save(out_path)
+    print(f"[+] Excel workbook with embedded ECG graph created: {out_path.resolve()}")
+    return out_path
+
+
 def main():
     parser = argparse.ArgumentParser(description="Plot ECG CSV data with clinical millimeter grid.")
     parser.add_argument(
@@ -225,6 +277,11 @@ def main():
         "--no-peaks",
         action="store_true",
         help="Disable automatic R-peak markers",
+    )
+    parser.add_argument(
+        "--excel",
+        action="store_true",
+        help="Also export to an Excel (.xlsx) file with a native interactive ECG line chart embedded",
     )
 
     args = parser.parse_args()
@@ -261,6 +318,9 @@ def main():
         show_peaks=not args.no_peaks,
         interactive=True,
     )
+
+    if args.excel:
+        export_to_excel(csv_path=csv_file, fs=args.fs)
 
 
 if __name__ == "__main__":

@@ -23,7 +23,9 @@ Thumbs.db
 # Generated plots and outputs
 *.png
 *.jpg
+*.xlsx
 ecg_plot.png
+ecg_waveform.xlsx
 
 # IDE
 .vscode/
