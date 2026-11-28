@@ -1,0 +1,20 @@
+﻿#,Area,What Needs to Be Done,Simple Explanation,Status,Where in Code / Hardware
+1,Hardware,ECG hardware setup,Built and tested the ECG sensor hardware (ESP32 + AD8232).,Done,Hardware (ESP32 + AD8232)
+2,ML & Real Data,Collect 4 people's ECG samples,Collected real ECG sample recordings from 4 people for testing (stored in sample_data_and_plots/).,Done,"sample_data_and_plots/ (csv_data, txt_data, plots)"
+3,Backend & ML,Anomaly detection model & prediction API,"Built the ML model, feature extraction, and /api/predictions endpoints for real-time scoring.",Done,"ml/, app/api/predictions.py, app/services/prediction_service.py, app/schemas/prediction.py"
+4,Testing & Docs,ML prediction tests,"Wrote automated tests verifying feature extraction, ECG rhythm labels, and prediction endpoints.",Done,tests/test_predictions.py
+5,Hardware,Connect remaining vital sensors,Wire and test Heart Rate/SpO2 (MAX30102) and Body Temperature (DS18B20) sensors with the ESP32.,To Do,"Hardware (ESP32 + MAX30102, DS18B20)"
+6,Hardware,Send live ESP32 data over Wi-Fi,"Program the ESP32 to send JSON sensor batches (heart rate, SpO2, temperature, 50 ECG points, leads status) to the backend.",To Do,ESP32 Firmware -> FastAPI
+7,ML & Real Data,Test ML model with 4 people's ECG samples,"Run the 4 collected ECG samples through the ML pipeline to verify peak detection, RMS, and scores (model currently uses synthetic data).",To Do,"ml/evaluate.py, ml/src/feature_extraction.py"
+8,Setup & Security,Add environment config & database packages,"Populate .env.example, load settings in config.py, and add MongoDB driver (pymongo[srv]) to requirements.txt.",Done,".env.example, app/core/config.py, requirements.txt"
+9,Setup & Security,Protect API with device keys,Add API key/token checks so only authorized ESP32 devices and dashboard clients can send or read data.,Done,"app/core/security.py, app/core/__init__.py"
+10,Database,Connect backend to MongoDB,"Set up the MongoDB Atlas connection and create database collections and indexes for devices, health readings, and alerts.",Done,"app/database/connection.py, app/database/collections.py, app/database/__init__.py"
+11,Database,Define data formats for saving records,Define what a Device record and a Health Reading record look like in MongoDB and in API requests/responses.,Done,"app/models/device.py, app/models/health_reading.py, app/schemas/device.py, app/schemas/health_reading.py"
+12,Backend & ML,Build Device registration & status APIs,"Create endpoints to register ESP32 devices, list them, and track when each device was last online.",Done,app/api/devices.py
+13,Backend & ML,Build Readings save & history APIs,"Create endpoints to receive live sensor readings, save them to MongoDB, run ML checks, and fetch past readings for charts.",Done,"app/api/readings.py, app/services/reading_service.py"
+14,Backend & ML,Build Health Alert system,"Automatically detect abnormal vitals or ML anomalies, save an alert record, and avoid duplicate alert spam.",Done,app/services/alert_service.py
+15,Backend & ML,Support multiple devices at once,Update prediction_service.py so each ESP32 device gets its own 30-sample rolling history instead of sharing one global buffer.,To Do,app/services/prediction_service.py
+16,Live Dashboard,Add live WebSocket updates,"Set up WebSockets so new vitals, ML scores, and alerts appear instantly on the React dashboard without refreshing.",Done,"app/websocket/manager.py, app/websocket/__init__.py"
+17,Backend & ML,Connect all routes in main server file,"Wire MongoDB startup/shutdown, device & reading routers, WebSockets, package exports, and config-based CORS into main.py.",Done,"app/main.py, app/api/__init__.py, app/services/__init__.py"
+18,Testing & Docs,Write tests for devices & readings,"Add automated tests covering device management, saving readings, alerts, and live WebSocket updates.",Done,"tests/test_devices.py, tests/test_readings.py, tests/__init__.py"
+19,Testing & Docs,Update root README instructions,"Update root README.md with .env setup, MongoDB steps, new API/WebSocket endpoints, and accurate folder paths.",To Do,README.md
